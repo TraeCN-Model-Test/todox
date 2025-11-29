@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
@@ -12,6 +13,7 @@ class TodoItemWidget extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onToggleComplete;
   final VoidCallback onDelete;
+  final VoidCallback? onEdit;
 
   const TodoItemWidget({
     Key? key,
@@ -19,36 +21,30 @@ class TodoItemWidget extends StatelessWidget {
     required this.onTap,
     required this.onToggleComplete,
     required this.onDelete,
+    this.onEdit,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Dismissible(
+    return Slidable(
       key: ValueKey(todo.id),
-      background: _buildSwipeBackground(
-        alignment: Alignment.centerLeft,
-        color: AppColors.warning,
-        icon: Icons.edit,
-        text: '编辑',
+      // 指定滑动的方向
+      direction: Axis.horizontal,
+      // 设置删除操作
+      endActionPane: ActionPane(
+        motion: const DrawerMotion(),
+        extentRatio: 0.25,
+        children: [
+          SlidableAction(
+            onPressed: (context) => onDelete(),
+            backgroundColor: AppColors.error,
+            foregroundColor: AppColors.white,
+            icon: Icons.delete,
+            label: '删除',
+            spacing: 8,
+          ),
+        ],
       ),
-      secondaryBackground: _buildSwipeBackground(
-        alignment: Alignment.centerRight,
-        color: AppColors.error,
-        icon: Icons.delete,
-        text: '删除',
-      ),
-      confirmDismiss: (direction) async {
-        if (direction == DismissDirection.endToStart) {
-          // 右滑删除
-          _showDeleteConfirmationDialog();
-          return false; // 阻止自动删除，由对话框处理
-        } else if (direction == DismissDirection.startToEnd) {
-          // 左滑编辑
-          onTap();
-          return false; // 阻止自动删除，由点击事件处理
-        }
-        return false;
-      },
       child: Card(
         margin: const EdgeInsets.only(bottom: AppConstants.smallPadding),
         elevation: 2,
@@ -76,38 +72,6 @@ class TodoItemWidget extends StatelessWidget {
     );
   }
 
-  /// 构建滑动背景
-  Widget _buildSwipeBackground({
-    required Alignment alignment,
-    required Color color,
-    required IconData icon,
-    required String text,
-  }) {
-    return Container(
-      alignment: alignment,
-      padding: const EdgeInsets.symmetric(horizontal: AppConstants.defaultPadding),
-      color: color,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: AppColors.onPrimary,
-            size: 24,
-          ),
-          const SizedBox(width: AppConstants.smallPadding),
-          Text(
-            text,
-            style: const TextStyle(
-              color: AppColors.onPrimary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   /// 构建头部区域
   Widget _buildHeader() {
     return Row(
@@ -120,19 +84,20 @@ class TodoItemWidget extends StatelessWidget {
             height: 24,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: todo.isCompleted ? AppColors.success : Colors.transparent,
+              color: todo.isCompleted ? AppColors.success : AppColors.transparent,
               border: Border.all(
                 color: todo.isCompleted ? AppColors.success : AppColors.grey400,
                 width: 2,
               ),
             ),
-            child: todo.isCompleted
-                ? const Icon(
-                    Icons.check,
-                    color: AppColors.onSuccess,
-                    size: 16,
-                  )
-                : null,
+            child:
+                todo.isCompleted
+                    ? const Icon(
+                      Icons.check,
+                      color: AppColors.onSuccess,
+                      size: 16,
+                    )
+                    : null,
           ),
         ),
         const SizedBox(width: AppConstants.defaultPadding),
@@ -144,7 +109,8 @@ class TodoItemWidget extends StatelessWidget {
               fontSize: 16,
               fontWeight: FontWeight.bold,
               decoration: todo.isCompleted ? TextDecoration.lineThrough : null,
-              color: todo.isCompleted ? AppColors.grey500 : AppColors.textPrimary,
+              color:
+                  todo.isCompleted ? AppColors.grey500 : AppColors.textPrimary,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -221,10 +187,7 @@ class TodoItemWidget extends StatelessWidget {
         // 创建时间
         Text(
           DateTimeUtils.formatDate(todo.createdAt),
-          style: TextStyle(
-            fontSize: 12,
-            color: AppColors.grey500,
-          ),
+          style: TextStyle(fontSize: 12, color: AppColors.grey500),
         ),
         // 截止日期（如果有）
         if (todo.dueDate != null) _buildDueDateWidget(),
@@ -238,7 +201,10 @@ class TodoItemWidget extends StatelessWidget {
     final dueDate = todo.dueDate!;
     final isOverdue = dueDate.isBefore(now) && !todo.isCompleted;
     final isToday = DateTimeUtils.isSameDay(dueDate, now);
-    final isTomorrow = DateTimeUtils.isSameDay(dueDate, now.add(const Duration(days: 1)));
+    final isTomorrow = DateTimeUtils.isSameDay(
+      dueDate,
+      now.add(const Duration(days: 1)),
+    );
 
     Color textColor;
     String prefix;
@@ -259,49 +225,18 @@ class TodoItemWidget extends StatelessWidget {
 
     return Row(
       children: [
-        Icon(
-          Icons.event,
-          size: 14,
-          color: textColor,
-        ),
+        Icon(Icons.event, size: 14, color: textColor),
         const SizedBox(width: 4),
         Text(
           '$prefix ${DateTimeUtils.formatDate(dueDate)}',
           style: TextStyle(
             fontSize: 12,
             color: textColor,
-            fontWeight: isToday || isOverdue ? FontWeight.bold : FontWeight.normal,
+            fontWeight:
+                isToday || isOverdue ? FontWeight.bold : FontWeight.normal,
           ),
         ),
       ],
-    );
-  }
-
-  /// 显示删除确认对话框
-  void _showDeleteConfirmationDialog() {
-    showDialog(
-      context: Get.context!,
-      builder: (context) => AlertDialog(
-        title: const Text('确认删除'),
-        content: const Text('确定要删除这个待办事项吗？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              onDelete();
-              Navigator.of(context).pop();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              foregroundColor: AppColors.onError,
-            ),
-            child: const Text('删除'),
-          ),
-        ],
-      ),
     );
   }
 }

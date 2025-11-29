@@ -21,19 +21,24 @@ class CreateTodoPage extends GetView<CreateTodoController> {
   /// 构建应用栏
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      title: const Text('创建待办事项'),
+      title: Obx(() => Text(controller.isEditMode.value ? '编辑待办事项' : '创建待办事项')),
       backgroundColor: AppColors.primary,
       foregroundColor: AppColors.onPrimary,
       elevation: 0,
       actions: [
-        // 重置按钮
-        TextButton(
-          onPressed: controller.resetForm,
-          child: const Text(
-            '重置',
-            style: TextStyle(color: AppColors.onPrimary),
-          ),
-        ),
+        // 重置按钮（仅在创建模式显示）
+        Obx(() {
+          if (!controller.isEditMode.value) {
+            return TextButton(
+              onPressed: controller.resetForm,
+              child: const Text(
+                '重置',
+                style: TextStyle(color: AppColors.onPrimary),
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        }),
       ],
     );
   }
@@ -190,11 +195,8 @@ class CreateTodoPage extends GetView<CreateTodoController> {
           vertical: AppConstants.defaultPadding,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? color : Colors.transparent,
-          border: Border.all(
-            color: color,
-            width: 2,
-          ),
+          color: isSelected ? color : AppColors.transparent,
+          border: Border.all(color: color, width: 2),
           borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
         ),
         child: Text(
@@ -232,18 +234,23 @@ class CreateTodoPage extends GetView<CreateTodoController> {
                     padding: const EdgeInsets.all(AppConstants.defaultPadding),
                     decoration: BoxDecoration(
                       border: Border.all(color: AppColors.grey400),
-                      borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+                      borderRadius: BorderRadius.circular(
+                        AppConstants.cardBorderRadius,
+                      ),
                     ),
                     child: Row(
                       children: [
                         const Icon(Icons.calendar_today),
                         const SizedBox(width: AppConstants.smallPadding),
                         Text(
-                          controller.formatDueDate(controller.selectedDueDate.value),
+                          controller.formatDueDate(
+                            controller.selectedDueDate.value,
+                          ),
                           style: TextStyle(
-                            color: controller.selectedDueDate.value != null
-                                ? AppColors.textPrimary
-                                : AppColors.grey500,
+                            color:
+                                controller.selectedDueDate.value != null
+                                    ? AppColors.textPrimary
+                                    : AppColors.grey500,
                           ),
                         ),
                       ],
@@ -274,7 +281,7 @@ class CreateTodoPage extends GetView<CreateTodoController> {
         color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: AppColors.black.withOpacity(0.1),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),
@@ -286,27 +293,34 @@ class CreateTodoPage extends GetView<CreateTodoController> {
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: AppColors.onPrimary,
-            padding: const EdgeInsets.symmetric(vertical: AppConstants.defaultPadding),
+            padding: const EdgeInsets.symmetric(
+              vertical: AppConstants.defaultPadding,
+            ),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+              borderRadius: BorderRadius.circular(
+                AppConstants.cardBorderRadius,
+              ),
             ),
           ),
-          child: controller.isLoading.value
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    color: AppColors.onPrimary,
-                    strokeWidth: 2,
+          child:
+              controller.isLoading.value
+                  ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: AppColors.onPrimary,
+                      strokeWidth: 2,
+                    ),
+                  )
+                  : Obx(
+                    () => Text(
+                      controller.isEditMode.value ? '更新待办事项' : '创建待办事项',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                )
-              : const Text(
-                  '创建待办事项',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
         ),
       ),
     );
