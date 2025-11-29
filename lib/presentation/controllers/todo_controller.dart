@@ -5,7 +5,8 @@ import '../../data/repositories/hive_service.dart';
 /// 待办事项控制器
 /// 负责管理待办事项的状态和业务逻辑
 class TodoController extends GetxController {
-  final HiveService _hiveService = HiveService.instance;
+  final HiveService _hiveService;
+  final Function(String, String)? _showSnackbar;
 
   /// 所有待办事项列表
   final RxList<Todo> _todos = <Todo>[].obs;
@@ -26,10 +27,17 @@ class TodoController extends GetxController {
   final RxString _sortBy = 'time'.obs;
 
   /// 是否升序排列
-  final RxBool _isAscending = false.obs;
+  final RxBool _isAscending = true.obs;
 
   /// 是否正在加载
   final RxBool _isLoading = false.obs;
+
+  /// Constructor with dependency injection
+  TodoController({
+    HiveService? hiveService,
+    Function(String, String)? showSnackbar,
+  }) : _hiveService = hiveService ?? HiveService.instance,
+       _showSnackbar = showSnackbar;
 
   /// 获取所有待办事项
   List<Todo> get todos => _todos.toList();
@@ -73,7 +81,18 @@ class TodoController extends GetxController {
 
     // 应用搜索过滤
     if (_searchQuery.value.isNotEmpty) {
-      result = _hiveService.searchTodos(_searchQuery.value);
+      final lowerQuery = _searchQuery.value.toLowerCase();
+      result =
+          result
+              .where(
+                (todo) =>
+                    todo.title.toLowerCase().contains(lowerQuery) ||
+                    todo.description.toLowerCase().contains(lowerQuery) ||
+                    todo.tags.any(
+                      (tag) => tag.toLowerCase().contains(lowerQuery),
+                    ),
+              )
+              .toList();
     }
 
     // 应用排序
@@ -111,7 +130,11 @@ class TodoController extends GetxController {
       _todos.assignAll(todos);
       _updateFilteredLists();
     } catch (e) {
-      Get.snackbar('错误', '加载待办事项失败: $e');
+      if (_showSnackbar != null) {
+        _showSnackbar!('错误', '加载待办事项失败: $e');
+      } else {
+        Get.snackbar('错误', '加载待办事项失败: $e');
+      }
     } finally {
       _isLoading.value = false;
     }
@@ -143,10 +166,18 @@ class TodoController extends GetxController {
       await _hiveService.addTodo(todo);
       _todos.add(todo);
       _updateFilteredLists();
-      
-      Get.snackbar('成功', '待办事项已添加');
+
+      if (_showSnackbar != null) {
+        _showSnackbar!('成功', '待办事项已添加');
+      } else {
+        Get.snackbar('成功', '待办事项已添加');
+      }
     } catch (e) {
-      Get.snackbar('错误', '添加待办事项失败: $e');
+      if (_showSnackbar != null) {
+        _showSnackbar!('错误', '添加待办事项失败: $e');
+      } else {
+        Get.snackbar('错误', '添加待办事项失败: $e');
+      }
     }
   }
 
@@ -154,16 +185,24 @@ class TodoController extends GetxController {
   Future<void> updateTodo(Todo todo) async {
     try {
       await _hiveService.updateTodo(todo);
-      
+
       final index = _todos.indexWhere((t) => t.id == todo.id);
       if (index != -1) {
         _todos[index] = todo;
         _updateFilteredLists();
       }
-      
-      Get.snackbar('成功', '待办事项已更新');
+
+      if (_showSnackbar != null) {
+        _showSnackbar!('成功', '待办事项已更新');
+      } else {
+        Get.snackbar('成功', '待办事项已更新');
+      }
     } catch (e) {
-      Get.snackbar('错误', '更新待办事项失败: $e');
+      if (_showSnackbar != null) {
+        _showSnackbar!('错误', '更新待办事项失败: $e');
+      } else {
+        Get.snackbar('错误', '更新待办事项失败: $e');
+      }
     }
   }
 
@@ -173,10 +212,18 @@ class TodoController extends GetxController {
       await _hiveService.deleteTodo(id);
       _todos.removeWhere((todo) => todo.id == id);
       _updateFilteredLists();
-      
-      Get.snackbar('成功', '待办事项已删除');
+
+      if (_showSnackbar != null) {
+        _showSnackbar!('成功', '待办事项已删除');
+      } else {
+        Get.snackbar('成功', '待办事项已删除');
+      }
     } catch (e) {
-      Get.snackbar('错误', '删除待办事项失败: $e');
+      if (_showSnackbar != null) {
+        _showSnackbar!('错误', '删除待办事项失败: $e');
+      } else {
+        Get.snackbar('错误', '删除待办事项失败: $e');
+      }
     }
   }
 
@@ -186,10 +233,18 @@ class TodoController extends GetxController {
       await _hiveService.deleteTodos(ids);
       _todos.removeWhere((todo) => ids.contains(todo.id));
       _updateFilteredLists();
-      
-      Get.snackbar('成功', '已删除 ${ids.length} 个待办事项');
+
+      if (_showSnackbar != null) {
+        _showSnackbar!('成功', '已删除 ${ids.length} 个待办事项');
+      } else {
+        Get.snackbar('成功', '已删除 ${ids.length} 个待办事项');
+      }
     } catch (e) {
-      Get.snackbar('错误', '删除待办事项失败: $e');
+      if (_showSnackbar != null) {
+        _showSnackbar!('错误', '删除待办事项失败: $e');
+      } else {
+        Get.snackbar('错误', '删除待办事项失败: $e');
+      }
     }
   }
 
@@ -197,14 +252,18 @@ class TodoController extends GetxController {
   Future<void> toggleTodoCompletion(String id) async {
     try {
       await _hiveService.toggleTodoCompletion(id);
-      
+
       final index = _todos.indexWhere((todo) => todo.id == id);
       if (index != -1) {
         _todos[index] = _hiveService.getTodoById(id)!;
         _updateFilteredLists();
       }
     } catch (e) {
-      Get.snackbar('错误', '更新待办事项状态失败: $e');
+      if (_showSnackbar != null) {
+        _showSnackbar!('错误', '更新待办事项状态失败: $e');
+      } else {
+        Get.snackbar('错误', '更新待办事项状态失败: $e');
+      }
     }
   }
 
@@ -212,14 +271,18 @@ class TodoController extends GetxController {
   Future<void> markTodoAsCompleted(String id) async {
     try {
       await _hiveService.markTodoAsCompleted(id);
-      
+
       final index = _todos.indexWhere((todo) => todo.id == id);
       if (index != -1) {
         _todos[index] = _hiveService.getTodoById(id)!;
         _updateFilteredLists();
       }
     } catch (e) {
-      Get.snackbar('错误', '标记待办事项为已完成失败: $e');
+      if (_showSnackbar != null) {
+        _showSnackbar!('错误', '标记待办事项为已完成失败: $e');
+      } else {
+        Get.snackbar('错误', '标记待办事项为已完成失败: $e');
+      }
     }
   }
 
@@ -227,14 +290,18 @@ class TodoController extends GetxController {
   Future<void> markTodoAsIncomplete(String id) async {
     try {
       await _hiveService.markTodoAsIncomplete(id);
-      
+
       final index = _todos.indexWhere((todo) => todo.id == id);
       if (index != -1) {
         _todos[index] = _hiveService.getTodoById(id)!;
         _updateFilteredLists();
       }
     } catch (e) {
-      Get.snackbar('错误', '标记待办事项为未完成失败: $e');
+      if (_showSnackbar != null) {
+        _showSnackbar!('错误', '标记待办事项为未完成失败: $e');
+      } else {
+        Get.snackbar('错误', '标记待办事项为未完成失败: $e');
+      }
     }
   }
 
@@ -256,6 +323,7 @@ class TodoController extends GetxController {
   /// 切换排序方向
   void toggleSortDirection() {
     _isAscending.value = !_isAscending.value;
+    update(); // 触发UI重建
   }
 
   /// 对待办事项进行排序
@@ -289,13 +357,22 @@ class TodoController extends GetxController {
     return sortedTodos;
   }
 
+  /// 刷新待办事项列表
+  Future<void> refreshTodos() async {
+    await loadTodos();
+  }
+
   /// 清空所有已完成的待办事项
   Future<void> clearCompletedTodos() async {
     try {
       final completedIds = _completedTodos.map((todo) => todo.id).toList();
       await deleteTodos(completedIds);
     } catch (e) {
-      Get.snackbar('错误', '清空已完成待办事项失败: $e');
+      if (_showSnackbar != null) {
+        _showSnackbar!('错误', '清空已完成待办事项失败: $e');
+      } else {
+        Get.snackbar('错误', '清空已完成待办事项失败: $e');
+      }
     }
   }
 
@@ -306,15 +383,18 @@ class TodoController extends GetxController {
       _todos.clear();
       _completedTodos.clear();
       _incompleteTodos.clear();
-      
-      Get.snackbar('成功', '已清空所有待办事项');
-    } catch (e) {
-      Get.snackbar('错误', '清空待办事项失败: $e');
-    }
-  }
 
-  /// 刷新待办事项列表
-  Future<void> refreshTodos() async {
-    await loadTodos();
+      if (_showSnackbar != null) {
+        _showSnackbar!('成功', '已清空所有待办事项');
+      } else {
+        Get.snackbar('成功', '已清空所有待办事项');
+      }
+    } catch (e) {
+      if (_showSnackbar != null) {
+        _showSnackbar!('错误', '清空待办事项失败: $e');
+      } else {
+        Get.snackbar('错误', '清空待办事项失败: $e');
+      }
+    }
   }
 }

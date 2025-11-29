@@ -21,19 +21,20 @@ class CreateTodoPage extends GetView<CreateTodoController> {
   /// 构建应用栏
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      title: const Text('创建待办事项'),
+      title: Obx(() => Text(controller.isEditing.value ? '编辑待办事项' : '创建待办事项')),
       backgroundColor: AppColors.primary,
       foregroundColor: AppColors.onPrimary,
       elevation: 0,
       actions: [
         // 重置按钮
-        TextButton(
-          onPressed: controller.resetForm,
-          child: const Text(
-            '重置',
-            style: TextStyle(color: AppColors.onPrimary),
+        if (!controller.isEditing.value)
+          TextButton(
+            onPressed: controller.resetForm,
+            child: const Text(
+              '重置',
+              style: TextStyle(color: AppColors.onPrimary),
+            ),
           ),
-        ),
       ],
     );
   }
@@ -191,10 +192,7 @@ class CreateTodoPage extends GetView<CreateTodoController> {
         ),
         decoration: BoxDecoration(
           color: isSelected ? color : Colors.transparent,
-          border: Border.all(
-            color: color,
-            width: 2,
-          ),
+          border: Border.all(color: color, width: 2),
           borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
         ),
         child: Text(
@@ -232,18 +230,23 @@ class CreateTodoPage extends GetView<CreateTodoController> {
                     padding: const EdgeInsets.all(AppConstants.defaultPadding),
                     decoration: BoxDecoration(
                       border: Border.all(color: AppColors.grey400),
-                      borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+                      borderRadius: BorderRadius.circular(
+                        AppConstants.cardBorderRadius,
+                      ),
                     ),
                     child: Row(
                       children: [
                         const Icon(Icons.calendar_today),
                         const SizedBox(width: AppConstants.smallPadding),
                         Text(
-                          controller.formatDueDate(controller.selectedDueDate.value),
+                          controller.formatDueDate(
+                            controller.selectedDueDate.value,
+                          ),
                           style: TextStyle(
-                            color: controller.selectedDueDate.value != null
-                                ? AppColors.textPrimary
-                                : AppColors.grey500,
+                            color:
+                                controller.selectedDueDate.value != null
+                                    ? AppColors.textPrimary
+                                    : AppColors.grey500,
                           ),
                         ),
                       ],
@@ -282,31 +285,34 @@ class CreateTodoPage extends GetView<CreateTodoController> {
       ),
       child: Obx(
         () => ElevatedButton(
-          onPressed: controller.isLoading.value ? null : controller.createTodo,
+          onPressed:
+              controller.isLoading.value ? null : controller.createOrUpdateTodo,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: AppColors.onPrimary,
-            padding: const EdgeInsets.symmetric(vertical: AppConstants.defaultPadding),
+            padding: const EdgeInsets.symmetric(
+              vertical: AppConstants.defaultPadding,
+            ),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+              borderRadius: BorderRadius.circular(
+                AppConstants.cardBorderRadius,
+              ),
             ),
           ),
-          child: controller.isLoading.value
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    color: AppColors.onPrimary,
-                    strokeWidth: 2,
+          child:
+              controller.isLoading.value
+                  ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: AppColors.onPrimary,
+                      strokeWidth: 2,
+                    ),
+                  )
+                  : const Text(
+                    '创建待办事项',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                )
-              : const Text(
-                  '创建待办事项',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
         ),
       ),
     );

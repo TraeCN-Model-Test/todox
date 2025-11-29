@@ -34,6 +34,12 @@ class HiveService {
       Hive.registerAdapter(TodoAdapter());
     }
 
+    // 如果已经打开盒子，先关闭
+    if (_todoBox != null && _todoBox!.isOpen) {
+      await _todoBox!.close();
+      _todoBox = null;
+    }
+
     // 打开数据盒子
     await _openBoxes();
   }
@@ -93,6 +99,7 @@ class HiveService {
     final todo = _todoBox?.get(id);
     if (todo != null) {
       todo.markAsCompleted();
+      await _todoBox?.put(id, todo); // Save changes to Hive
     }
   }
 
@@ -101,6 +108,7 @@ class HiveService {
     final todo = _todoBox?.get(id);
     if (todo != null) {
       todo.markAsIncomplete();
+      await _todoBox?.put(id, todo); // Save changes to Hive
     }
   }
 
@@ -109,6 +117,7 @@ class HiveService {
     final todo = _todoBox?.get(id);
     if (todo != null) {
       todo.toggleCompletion();
+      await _todoBox?.put(id, todo); // Save changes to Hive
     }
   }
 

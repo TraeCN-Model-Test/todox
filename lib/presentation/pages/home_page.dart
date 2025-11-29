@@ -39,53 +39,54 @@ class HomePage extends GetView<TodoController> {
           onSelected: (value) {
             controller.setFilterStatus(value);
           },
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              value: 'all',
-              child: Row(
-                children: [
-                  const Icon(Icons.list),
-                  const SizedBox(width: 8),
-                  const Text('全部'),
-                  if (controller.filterStatus == 'all')
-                    const Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: Icon(Icons.check, color: AppColors.primary),
-                    ),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'incomplete',
-              child: Row(
-                children: [
-                  const Icon(Icons.radio_button_unchecked),
-                  const SizedBox(width: 8),
-                  const Text('未完成'),
-                  if (controller.filterStatus == 'incomplete')
-                    const Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: Icon(Icons.check, color: AppColors.primary),
-                    ),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'completed',
-              child: Row(
-                children: [
-                  const Icon(Icons.check_circle),
-                  const SizedBox(width: 8),
-                  const Text('已完成'),
-                  if (controller.filterStatus == 'completed')
-                    const Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: Icon(Icons.check, color: AppColors.primary),
-                    ),
-                ],
-              ),
-            ),
-          ],
+          itemBuilder:
+              (context) => [
+                PopupMenuItem(
+                  value: 'all',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.list),
+                      const SizedBox(width: 8),
+                      const Text('全部'),
+                      if (controller.filterStatus == 'all')
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Icon(Icons.check, color: AppColors.primary),
+                        ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'incomplete',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.radio_button_unchecked),
+                      const SizedBox(width: 8),
+                      const Text('未完成'),
+                      if (controller.filterStatus == 'incomplete')
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Icon(Icons.check, color: AppColors.primary),
+                        ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'completed',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.check_circle),
+                      const SizedBox(width: 8),
+                      const Text('已完成'),
+                      if (controller.filterStatus == 'completed')
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Icon(Icons.check, color: AppColors.primary),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
         ),
         // 排序按钮
         PopupMenuButton<String>(
@@ -93,68 +94,69 @@ class HomePage extends GetView<TodoController> {
           onSelected: (value) {
             controller.setSortBy(value);
           },
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              value: 'time',
-              child: Row(
-                children: [
-                  const Icon(Icons.access_time),
-                  const SizedBox(width: 8),
-                  const Text('按时间'),
-                  if (controller.sortBy == 'time')
-                    const Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: Icon(Icons.check, color: AppColors.primary),
-                    ),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'priority',
-              child: Row(
-                children: [
-                  const Icon(Icons.flag),
-                  const SizedBox(width: 8),
-                  const Text('按优先级'),
-                  if (controller.sortBy == 'priority')
-                    const Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: Icon(Icons.check, color: AppColors.primary),
-                    ),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'title',
-              child: Row(
-                children: [
-                  const Icon(Icons.sort_by_alpha),
-                  const SizedBox(width: 8),
-                  const Text('按标题'),
-                  if (controller.sortBy == 'title')
-                    const Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: Icon(Icons.check, color: AppColors.primary),
-                    ),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'dueDate',
-              child: Row(
-                children: [
-                  const Icon(Icons.event),
-                  const SizedBox(width: 8),
-                  const Text('按截止日期'),
-                  if (controller.sortBy == 'dueDate')
-                    const Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: Icon(Icons.check, color: AppColors.primary),
-                    ),
-                ],
-              ),
-            ),
-          ],
+          itemBuilder:
+              (context) => [
+                PopupMenuItem(
+                  value: 'time',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.access_time),
+                      const SizedBox(width: 8),
+                      const Text('按时间'),
+                      if (controller.sortBy == 'time')
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Icon(Icons.check, color: AppColors.primary),
+                        ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'priority',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.flag),
+                      const SizedBox(width: 8),
+                      const Text('按优先级'),
+                      if (controller.sortBy == 'priority')
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Icon(Icons.check, color: AppColors.primary),
+                        ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'title',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.sort_by_alpha),
+                      const SizedBox(width: 8),
+                      const Text('按标题'),
+                      if (controller.sortBy == 'title')
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Icon(Icons.check, color: AppColors.primary),
+                        ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'dueDate',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.event),
+                      const SizedBox(width: 8),
+                      const Text('按截止日期'),
+                      if (controller.sortBy == 'dueDate')
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Icon(Icons.check, color: AppColors.primary),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
         ),
       ],
     );
@@ -163,9 +165,7 @@ class HomePage extends GetView<TodoController> {
   /// 构建主体内容
   Widget _buildBody(BuildContext context) {
     if (controller.isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (controller.displayTodos.isEmpty) {
@@ -188,7 +188,8 @@ class HomePage extends GetView<TodoController> {
                   key: ValueKey(todo.id),
                   todo: todo,
                   onTap: () => _showTodoDetails(todo),
-                  onToggleComplete: () => controller.toggleTodoCompletion(todo.id),
+                  onToggleComplete:
+                      () => controller.toggleTodoCompletion(todo.id),
                   onDelete: () => _showDeleteConfirmationDialog(todo.id),
                 );
               },
@@ -226,26 +227,28 @@ class HomePage extends GetView<TodoController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 80,
-            color: AppColors.grey400,
-          ),
+          Icon(icon, size: 80, color: AppColors.grey400),
           const SizedBox(height: AppConstants.defaultPadding),
           Text(
             title,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: AppColors.grey600,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(color: AppColors.grey600),
           ),
           const SizedBox(height: AppConstants.smallPadding),
           Text(
             subtitle,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.grey500,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.grey500),
             textAlign: TextAlign.center,
           ),
+          const SizedBox(height: AppConstants.defaultPadding),
+          if (controller.filterStatus == 'all')
+            ElevatedButton(
+              onPressed: () => Get.toNamed(AppConstants.createTodoRoute),
+              child: const Text('添加第一个待办事项'),
+            ),
         ],
       ),
     );
@@ -266,7 +269,10 @@ class HomePage extends GetView<TodoController> {
           _buildStatItem('总计', controller.todoCount.toString()),
           _buildStatItem('已完成', controller.completedTodoCount.toString()),
           _buildStatItem('未完成', controller.incompleteTodoCount.toString()),
-          _buildStatItem('完成率', '${(controller.completionRate * 100).toInt()}%'),
+          _buildStatItem(
+            '完成率',
+            '${(controller.completionRate * 100).toInt()}%',
+          ),
         ],
       ),
     );
@@ -287,10 +293,7 @@ class HomePage extends GetView<TodoController> {
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.grey600,
-          ),
+          style: const TextStyle(fontSize: 12, color: AppColors.grey600),
         ),
       ],
     );
@@ -314,41 +317,42 @@ class HomePage extends GetView<TodoController> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('搜索待办事项'),
-        content: TextField(
-          controller: searchController,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: '输入关键词搜索...',
-            border: OutlineInputBorder(),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('搜索待办事项'),
+            content: TextField(
+              controller: searchController,
+              autofocus: true,
+              decoration: const InputDecoration(
+                hintText: '输入关键词搜索...',
+                border: OutlineInputBorder(),
+              ),
+              onSubmitted: (value) {
+                controller.setSearchQuery(value);
+                Navigator.of(context).pop();
+              },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  controller.setSearchQuery('');
+                  Navigator.of(context).pop();
+                },
+                child: const Text('清空'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('取消'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  controller.setSearchQuery(searchController.text);
+                  Navigator.of(context).pop();
+                },
+                child: const Text('搜索'),
+              ),
+            ],
           ),
-          onSubmitted: (value) {
-            controller.setSearchQuery(value);
-            Navigator.of(context).pop();
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              controller.setSearchQuery('');
-              Navigator.of(context).pop();
-            },
-            child: const Text('清空'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              controller.setSearchQuery(searchController.text);
-              Navigator.of(context).pop();
-            },
-            child: const Text('搜索'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -369,27 +373,28 @@ class HomePage extends GetView<TodoController> {
   void _showDeleteConfirmationDialog(String todoId) {
     showDialog(
       context: Get.context!,
-      builder: (context) => AlertDialog(
-        title: const Text('确认删除'),
-        content: const Text('确定要删除这个待办事项吗？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('确认删除'),
+            content: const Text('确定要删除这个待办事项吗？'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('取消'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  controller.deleteTodo(todoId);
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                  foregroundColor: AppColors.onError,
+                ),
+                child: const Text('删除'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              controller.deleteTodo(todoId);
-              Navigator.of(context).pop();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              foregroundColor: AppColors.onError,
-            ),
-            child: const Text('删除'),
-          ),
-        ],
-      ),
     );
   }
 }

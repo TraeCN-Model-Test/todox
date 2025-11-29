@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/date_time_utils.dart';
+import '../../data/models/todo.dart';
 import 'todo_controller.dart';
 
 /// 创建待办事项控制器
@@ -15,16 +16,34 @@ class CreateTodoController extends GetxController {
   var selectedPriority = 2.obs; // 默认中等优先级
   var selectedDueDate = Rxn<DateTime>(); // 截止日期
   var isLoading = false.obs;
+  var isEditing = false.obs;
+  var editingTodo = Rx<Todo?>(null);
 
   // 表单验证
   var titleError = Rxn<String>();
   var descriptionError = Rxn<String>();
+
+  CreateTodoController({Todo? todo}) {
+    if (todo != null) {
+      isEditing.value = true;
+      editingTodo.value = todo;
+    }
+  }
 
   @override
   void onInit() {
     super.onInit();
     titleController = TextEditingController();
     descriptionController = TextEditingController();
+
+    // If editing, fill the form with todo data
+    if (isEditing.value && editingTodo.value != null) {
+      final todo = editingTodo.value!;
+      titleController.text = todo.title;
+      descriptionController.text = todo.description;
+      selectedPriority.value = todo.priority;
+      selectedDueDate.value = todo.dueDate;
+    }
   }
 
   @override
@@ -81,8 +100,8 @@ class CreateTodoController extends GetxController {
     selectedDueDate.value = null;
   }
 
-  /// 创建待办事项
-  Future<void> createTodo() async {
+  /// 创建或更新待办事项
+  Future<void> createOrUpdateTodo() async {
     if (!validateForm()) {
       return;
     }
@@ -90,24 +109,45 @@ class CreateTodoController extends GetxController {
     isLoading.value = true;
 
     try {
-      // 这里应该调用TodoController的addTodo方法
-      // 由于我们在不同的控制器中，可以使用Get.find来获取TodoController
       final todoController = Get.find<TodoController>();
-      await todoController.addTodo(
-        title: titleController.text.trim(),
-        description: descriptionController.text.trim(),
-        priority: selectedPriority.value,
-        dueDate: selectedDueDate.value,
-      );
 
-      // 显示成功消息
-      Get.snackbar(
-        '成功',
-        '待办事项已创建',
-        backgroundColor: AppColors.success,
-        colorText: AppColors.onSuccess,
-        duration: const Duration(seconds: 2),
-      );
+      if (isEditing.value && editingTodo.value != null) {
+        // 编辑模式：更新现有待办事项
+        final todo = editingTodo.value!;
+        todo.title = titleController.text.trim();
+        todo.description = descriptionController.text.trim();
+        todo.priority = selectedPriority.value;
+        todo.dueDate = selectedDueDate.value;
+        todo.updatedAt = DateTime.now();
+
+        await todoController.updateTodo(todo);
+
+        // 显示成功消息
+        Get.snackbar(
+          '成功',
+          '待办事项已更新',
+          backgroundColor: AppColors.success,
+          colorText: AppColors.onSuccess,
+          duration: const Duration(seconds: 2),
+        );
+      } else {
+        // 创建模式：添加新待办事项
+        await todoController.addTodo(
+          title: titleController.text.trim(),
+          description: descriptionController.text.trim(),
+          priority: selectedPriority.value,
+          dueDate: selectedDueDate.value,
+        );
+
+        // 显示成功消息
+        Get.snackbar(
+          '成功',
+          '待办事项已创建',
+          backgroundColor: AppColors.success,
+          colorText: AppColors.onSuccess,
+          duration: const Duration(seconds: 2),
+        );
+      }
 
       // 返回主页
       Get.back();
@@ -115,7 +155,7 @@ class CreateTodoController extends GetxController {
       // 显示错误消息
       Get.snackbar(
         '错误',
-        '创建待办事项失败: $e',
+        isEditing.value ? '更新待办事项失败: $e' : '创建待办事项失败: $e',
         backgroundColor: AppColors.error,
         colorText: AppColors.onError,
         duration: const Duration(seconds: 3),
