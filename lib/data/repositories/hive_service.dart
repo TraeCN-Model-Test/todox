@@ -93,6 +93,7 @@ class HiveService {
     final todo = _todoBox?.get(id);
     if (todo != null) {
       todo.markAsCompleted();
+      await updateTodo(todo);
     }
   }
 
@@ -101,6 +102,7 @@ class HiveService {
     final todo = _todoBox?.get(id);
     if (todo != null) {
       todo.markAsIncomplete();
+      await updateTodo(todo);
     }
   }
 
@@ -109,6 +111,7 @@ class HiveService {
     final todo = _todoBox?.get(id);
     if (todo != null) {
       todo.toggleCompletion();
+      await updateTodo(todo);
     }
   }
 

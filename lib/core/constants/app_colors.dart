@@ -61,4 +61,9 @@ class AppColors {
   static Color errorWithOpacity(double opacity) => error.withOpacity(opacity);
   static Color successWithOpacity(double opacity) =>
       success.withOpacity(opacity);
+
+  // 特殊颜色
+  static const Color transparent = Color(0x00000000);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color black = Color(0xFF000000);
 }
